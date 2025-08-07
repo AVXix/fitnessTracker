@@ -86,9 +86,21 @@ export default class CreateExercise extends Component {
     console.log(exercise);
 
     axios.post('http://localhost:5000/exercises/add', exercise)
-      .then(res => console.log(res.data));
-
-    window.location = '/';
+      .then(res => {
+        console.log(res.data);
+        // Clear the form after successful submission
+        this.setState({
+          description: '',
+          duration: 0,
+          date: new Date()
+          // username remains the same for convenience
+        });
+        // Redirect to home page to see the new exercise
+        window.location = '/';
+      })
+      .catch(err => {
+        console.error('Error adding exercise:', err);
+      });
   }
 
   render() {
