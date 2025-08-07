@@ -17,10 +17,10 @@ connection.once('open', async () => {
   if (existingUsers.length === 0) {
     // Add sample users
     const sampleUsers = [
-      { username: 'john_doe' },
-      { username: 'jane_smith' }, 
-      { username: 'mike_wilson' },
-      { username: 'sarah_jones' }
+      { username: 'john_doe', password: 'password123' },
+      { username: 'jane_smith', password: 'password123' }, 
+      { username: 'mike_wilson', password: 'password123' },
+      { username: 'sarah_jones', password: 'password123' }
     ];
     
     try {

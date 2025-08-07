@@ -26,17 +26,25 @@ export default class CreateExercise extends Component {
   }
 
   componentDidMount() {
+    console.log('Fetching users from API...');
     axios.get('http://localhost:5000/users/')
       .then(response => {
+        console.log('API response:', response.data);
         if (response.data.length > 0) {
+          const usernames = response.data.map(user => user.username);
+          console.log('Extracted usernames:', usernames);
           this.setState({
-            users: response.data.map(user => user.username),
-            username: response.data[0].username
-          })
+            users: usernames,
+            username: usernames[0]
+          });
+          console.log('State updated with users:', usernames);
+        } else {
+          console.log('No users found in API response');
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.error('Error fetching users:', error);
+        console.error('Error details:', error.response?.data || error.message);
       })
 
   }
@@ -95,15 +103,20 @@ export default class CreateExercise extends Component {
               className="form-control"
               value={this.state.username}
               onChange={this.onChangeUsername}>
-              {
+              {this.state.users.length === 0 ? (
+                <option value="">No users found - check server connection</option>
+              ) : (
                 this.state.users.map(function(user) {
                   return <option 
                     key={user}
                     value={user}>{user}
                     </option>;
                 })
-              }
+              )}
           </select>
+          <small className="form-text text-muted">
+            {this.state.users.length > 0 ? `${this.state.users.length} users loaded` : 'Loading users...'}
+          </small>
         </div>
         <div className="form-group"> 
           <label>Description: </label>

@@ -9,8 +9,12 @@ router.route('/').get((req, res) => {
 
 router.route('/add').post((req, res) => {
   const username = req.body.username;
-
-  const newUser = new User({username});
+  
+  // For simple user creation without password, use a default password
+  const newUser = new User({
+    username, 
+    password: 'defaultpass123' // Default password for simple users
+  });
 
   newUser.save()
     .then(() => res.json('User added!'))
