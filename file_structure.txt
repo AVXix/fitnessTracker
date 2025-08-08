@@ -1,0 +1,46 @@
+backend/
+├── .env                    # Environment variables
+├── server.js               # Main server entry point
+├── add_users.js            # User addition utility script
+├── package.json            # Backend dependencies (Express, Mongoose, etc.)
+├── package-lock.json       # Backend dependency lock file
+├── node_modules/           # Backend dependencies
+├── config/                 # Configuration files (currently empty)
+├── middleware/             # Custom middleware (directory exists)
+├── models/                 # MongoDB/Mongoose data models
+│   ├── exercise.model.js   # Exercise data schema
+│   ├── user.model.js       # User data schema
+│   └── workout.model.js    # Workout data schema
+└── routes/                 # API route handlers
+    ├── exercises.js        # Exercise-related endpoints
+    ├── users.js            # User-related endpoints
+    └── workout.js          # Workout-related endpoints
+
+
+
+src/
+├── App.js                  # Main App component
+├── App.css                 # App-specific styles
+├── App.test.js             # App tests
+├── index.js                # React app entry point
+├── index.css               # Global styles
+├── logo.svg                # React logo
+├── reportWebVitals.js      # Performance monitoring
+├── setupTests.js           # Test configuration
+├── SignupForm.js           # User signup form component
+├── components/             # Reusable React components
+│   ├── create-exercise.component.js    # Exercise creation form
+│   ├── create-user.component.js        # User creation form
+│   ├── edit-exercise.component.js      # Exercise editing form
+│   ├── exercises-list.component.js     # Exercise list display
+│   ├── navbar.component.js             # Navigation bar
+│   └── auth/                           # Authentication components (empty)
+└── pages/                  # Page components (currently empty)
+
+
+public/
+├── index.html              # Main HTML template
+├── favicon.ico             # Site icon
+├── logo192.png & logo512.png  # App icons
+├── manifest.json           # PWA manifest
+└── robots.txt              # Search engine crawler instructions
