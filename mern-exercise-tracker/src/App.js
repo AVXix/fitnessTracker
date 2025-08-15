@@ -24,6 +24,12 @@ import CreateWorkout from "./components/create-workout.component";
 import SignIn from './components/auth/SignIn';
 import SignUp from './components/auth/SignUp';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import WorkoutsPage from './components/WorkoutsPage';
+import Goals from './components/Goals';
+import Calories from './components/Calories';
+import Analytics from './components/Analytics';
+import Store from './components/Store';
+import Trainer from './components/Trainer';
 
 function PrivateRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -36,12 +42,19 @@ function AppRoutes() {
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
 
-      <Route path="/" element={<PrivateRoute><ExercisesList /></PrivateRoute>} />
+      <Route path="/" element={<Navigate to="/workouts" replace />} />
+      <Route path="/workouts" element={<PrivateRoute><WorkoutsPage /></PrivateRoute>} />
       <Route path="/edit/:id" element={<PrivateRoute><EditExercise /></PrivateRoute>} />
       <Route path="/create" element={<PrivateRoute><CreateExercise /></PrivateRoute>} />
       <Route path="/workout" element={<PrivateRoute><CreateWorkout /></PrivateRoute>} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/goals" element={<PrivateRoute><Goals /></PrivateRoute>} />
+      <Route path="/calories" element={<PrivateRoute><Calories /></PrivateRoute>} />
+      <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
+      <Route path="/store" element={<PrivateRoute><Store /></PrivateRoute>} />
+      <Route path="/trainer" element={<PrivateRoute><Trainer /></PrivateRoute>} />
+
+      <Route path="*" element={<Navigate to="/workouts" replace />} />
     </Routes>
   );
 }

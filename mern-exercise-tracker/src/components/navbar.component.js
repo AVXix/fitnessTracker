@@ -6,7 +6,7 @@ export default class Navbar extends Component {
   static contextType = AuthContext;
 
   render() {
-    const { isAuthenticated, signOut } = this.context || {};
+    const { isAuthenticated, signOut, loginToast } = this.context || {};
 
     return (
       <nav className="navbar navbar-dark bg-dark navbar-expand-lg">
@@ -16,7 +16,7 @@ export default class Navbar extends Component {
             <>
               <ul className="navbar-nav mr-auto">
                 <li className="navbar-item">
-                  <Link to="/" className="nav-link">Current workouts</Link>
+                  <Link to="/workouts" className="nav-link">Current workouts</Link>
                 </li>
 
                 <li className="navbar-item">
@@ -28,23 +28,23 @@ export default class Navbar extends Component {
                 </li>
                 
                 <li className="navbar-item">
-                  <Link to="/create" className="nav-link">Set Goal</Link>
+                  <Link to="/goals" className="nav-link">Set Goal</Link>
                 </li>
 
                 <li className="navbar-item">
-                  <Link to="/create" className="nav-link">Callorie tracker</Link>
+                  <Link to="/calories" className="nav-link">Calorie tracker</Link>
                 </li>
 
                 <li className="navbar-item">
-                  <Link to="/create" className="nav-link">Analytics</Link>
+                  <Link to="/analytics" className="nav-link">Analytics</Link>
                 </li>
 
                 <li className="navbar-item">
-                  <Link to="/create" className="nav-link">Store</Link>
+                  <Link to="/store" className="nav-link">Store</Link>
                 </li>
 
                 <li className="navbar-item">
-                  <Link to="/create" className="nav-link">Trainer</Link>
+                  <Link to="/trainer" className="nav-link">Trainer</Link>
                 </li>
               </ul>
               <ul className="navbar-nav ml-auto">
@@ -64,6 +64,13 @@ export default class Navbar extends Component {
             </ul>
           )}
         </div>
+
+        {isAuthenticated && loginToast && (
+          <div style={{ position: 'fixed', right: 16, bottom: 16, background: '#222', color: '#fff', padding: '12px 16px', borderRadius: 8, boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>
+            <div><strong>Goal:</strong> {loginToast.goalName}</div>
+            <div><strong>Target date:</strong> {loginToast.targetDate ? new Date(loginToast.targetDate).toLocaleDateString() : 'N/A'}</div>
+          </div>
+        )}
       </nav>
     );
   }
