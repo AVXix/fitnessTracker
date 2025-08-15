@@ -20,7 +20,7 @@ import Navbar from "./components/navbar.component";
 import ExercisesList from "./components/exercises-list.component";
 import EditExercise from "./components/edit-exercise.component";
 import CreateExercise from "./components/create-exercise.component";
-import CreateUser from "./components/create-user.component";
+import CreateWorkout from "./components/create-workout.component";
 import SignIn from './components/auth/SignIn';
 import SignUp from './components/auth/SignUp';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -39,7 +39,7 @@ function AppRoutes() {
       <Route path="/" element={<PrivateRoute><ExercisesList /></PrivateRoute>} />
       <Route path="/edit/:id" element={<PrivateRoute><EditExercise /></PrivateRoute>} />
       <Route path="/create" element={<PrivateRoute><CreateExercise /></PrivateRoute>} />
-      <Route path="/workout" element={<PrivateRoute><CreateUser /></PrivateRoute>} />
+      <Route path="/workout" element={<PrivateRoute><CreateWorkout /></PrivateRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

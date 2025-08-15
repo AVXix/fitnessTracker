@@ -23,7 +23,7 @@ export default class EditExercise extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/exercises/'+this.props.match.params.id)
+    axios.get('http://localhost:5000/exercises/'+this.props.match?.params?.id)
       .then(response => {
         this.setState({
           username: response.data.username,
@@ -36,11 +36,12 @@ export default class EditExercise extends Component {
         console.log(error);
       })
 
-    axios.get('http://localhost:5000/users/')
+    // Load workouts (stored under `username` field) for the dropdown
+    axios.get('http://localhost:5000/workout/')
       .then(response => {
         if (response.data.length > 0) {
           this.setState({
-            users: response.data.map(user => user.username),
+            users: response.data.map(w => w.username),
           })
         }
       })
@@ -86,7 +87,7 @@ export default class EditExercise extends Component {
 
     console.log(exercise);
 
-    axios.post('http://localhost:5000/exercises/update/' + this.props.match.params.id, exercise)
+    axios.post('http://localhost:5000/exercises/update/' + this.props.match?.params?.id, exercise)
       .then(res => console.log(res.data));
 
     window.location = '/';
@@ -98,7 +99,7 @@ export default class EditExercise extends Component {
       <h3>Edit Exercise Log</h3>
       <form onSubmit={this.onSubmit}>
         <div className="form-group"> 
-          <label>Username: </label>
+          <label>Workout Name: </label>
           <select ref="userInput"
               required
               className="form-control"

@@ -26,24 +26,24 @@ export default class CreateExercise extends Component {
   }
 
   componentDidMount() {
-    console.log('Fetching users from API...');
-    axios.get('http://localhost:5000/users/')
+    console.log('Fetching workouts from API...');
+    axios.get('http://localhost:5000/workout/')
       .then(response => {
         console.log('API response:', response.data);
         if (response.data.length > 0) {
-          const usernames = response.data.map(user => user.username);
-          console.log('Extracted usernames:', usernames);
+          const workoutNames = response.data.map(w => w.username);
+          console.log('Extracted workout names:', workoutNames);
           this.setState({
-            users: usernames,
-            username: usernames[0]
+            users: workoutNames,
+            username: workoutNames[0]
           });
-          console.log('State updated with users:', usernames);
+          console.log('State updated with workouts:', workoutNames);
         } else {
-          console.log('No users found in API response');
+          console.log('No workouts found in API response');
         }
       })
       .catch((error) => {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching workouts:', error);
         console.error('Error details:', error.response?.data || error.message);
       })
 
@@ -109,25 +109,25 @@ export default class CreateExercise extends Component {
       <h3>Fill details of workout</h3>
       <form onSubmit={this.onSubmit}>
         <div className="form-group"> 
-          <label>Workout </label>
+          <label>Workout Name</label>
           <select ref={this.userInputRef}
               required
               className="form-control"
               value={this.state.username}
               onChange={this.onChangeUsername}>
               {this.state.users.length === 0 ? (
-                <option value="">No users found - check server connection</option>
+                <option value="">No workouts found - check server connection</option>
               ) : (
-                this.state.users.map(function(user) {
+                this.state.users.map(function(name) {
                   return <option 
-                    key={user}
-                    value={user}>{user}
+                    key={name}
+                    value={name}>{name}
                     </option>;
                 })
               )}
           </select>
           <small className="form-text text-muted">
-            {this.state.users.length > 0 ? `${this.state.users.length} users loaded` : 'Loading users...'}
+            {this.state.users.length > 0 ? `${this.state.users.length} workouts loaded` : 'Loading workouts...'}
           </small>
         </div>
         <div className="form-group"> 
