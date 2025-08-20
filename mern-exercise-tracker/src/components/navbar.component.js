@@ -47,7 +47,10 @@ export default class Navbar extends Component {
                   <Link to="/trainer" className="nav-link">Trainer</Link>
                 </li>
               </ul>
-              <ul className="navbar-nav ml-auto">
+              <ul className="navbar-nav ms-auto">
+                <li className="navbar-item">
+                  <Link to="/profile" className="nav-link">Profile</Link>
+                </li>
                 <li className="navbar-item">
                   <button onClick={signOut} className="btn btn-outline-light btn-sm">Logout</button>
                 </li>
