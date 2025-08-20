@@ -71,57 +71,62 @@ export default function Profile() {
 
   return (
     <div>
-      <h2>Profile</h2>
+      <div className="d-flex align-items-center mb-3">
+        <h2 className="mb-0">Profile</h2>
+      </div>
       {loading ? (
         <div className="text-muted">Loading…</div>
       ) : (
-        <form onSubmit={onSubmit} style={{ maxWidth: 520 }}>
-          <div className="mb-3">
-            <label className="form-label">Name</label>
-            <input name="name" className="form-control" value={form.name} onChange={onChange} />
-          </div>
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Sex</label>
-              <select name="sex" className="form-select" value={form.sex} onChange={onChange}>
-                <option value="">—</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Age</label>
-              <input name="age" type="number" min="0" className="form-control" value={form.age} onChange={onChange} />
-            </div>
-          </div>
+        <div className="card">
+          <div className="card-body">
+            <form onSubmit={onSubmit}>
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label className="form-label">Name</label>
+                  <input name="name" className="form-control" value={form.name} onChange={onChange} />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label">Sex</label>
+                  <select name="sex" className="form-select" value={form.sex} onChange={onChange}>
+                    <option value="">—</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label">Age</label>
+                  <input name="age" type="number" min="0" className="form-control" value={form.age} onChange={onChange} />
+                </div>
 
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Height (cm)</label>
-              <input name="heightCm" type="number" min="0" className="form-control" value={form.heightCm} onChange={onChange} />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Weight (kg)</label>
-              <input name="weightKg" type="number" min="0" className="form-control" value={form.weightKg} onChange={onChange} />
-            </div>
-          </div>
+                <div className="col-md-4">
+                  <label className="form-label">Height (cm)</label>
+                  <input name="heightCm" type="number" min="0" className="form-control" value={form.heightCm} onChange={onChange} />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">Weight (kg)</label>
+                  <input name="weightKg" type="number" min="0" className="form-control" value={form.weightKg} onChange={onChange} />
+                </div>
+                <div className="col-md-4">
+                  <label className="form-label">Activity level</label>
+                  <select name="activityLevel" className="form-select" value={form.activityLevel} onChange={onChange}>
+                    <option value="">—</option>
+                    <option value="sedentary">Sedentary</option>
+                    <option value="light">Light</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="active">Active</option>
+                    <option value="very_active">Very Active</option>
+                  </select>
+                </div>
+              </div>
 
-          <div className="mb-3">
-            <label className="form-label">Activity level</label>
-            <select name="activityLevel" className="form-select" value={form.activityLevel} onChange={onChange}>
-              <option value="">—</option>
-              <option value="sedentary">Sedentary</option>
-              <option value="light">Light</option>
-              <option value="moderate">Moderate</option>
-              <option value="active">Active</option>
-              <option value="very_active">Very Active</option>
-            </select>
+              <div className="mt-3 d-flex align-items-center">
+                <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+                {message && <span className="ms-3">{message}</span>}
+              </div>
+            </form>
           </div>
-
-          <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
-          {message && <span className="ms-3">{message}</span>}
-        </form>
+        </div>
       )}
     </div>
   );

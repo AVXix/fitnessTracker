@@ -65,11 +65,10 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="container">
-          <Navbar />
-          <br/>
+        <Navbar />
+        <main className="container my-4">
           <AppRoutes />
-        </div>
+        </main>
       </Router>
     </AuthProvider>
   );

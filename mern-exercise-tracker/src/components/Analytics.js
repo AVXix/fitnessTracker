@@ -138,32 +138,36 @@ export default function Analytics() {
 
   return (
     <div>
-      <h2>Analytics</h2>
+      <div className="d-flex align-items-center mb-3 gap-2">
+        <h2 className="mb-0">Analytics</h2>
+      </div>
 
-      <div className="d-flex align-items-center gap-2 mb-3" style={{ gap: 12 }}>
-        <label className="form-label mb-0">Range:</label>
-        <select className="form-select" style={{ width: 140 }} value={rangeDays} onChange={(e) => setRangeDays(Number(e.target.value))}>
-          <option value={30}>Last 30 days</option>
-          <option value={90}>Last 90 days</option>
-          <option value={180}>Last 180 days</option>
-        </select>
-        <label className="form-label mb-0 ms-3">End date:</label>
-        <input
-          type="date"
-          className="form-control"
-          style={{ width: 170 }}
-          value={(() => {
-            const dt = endDate;
-            const y = dt.getFullYear();
-            const m = String(dt.getMonth() + 1).padStart(2, '0');
-            const d = String(dt.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
-          })()}
-          onChange={(e) => {
-            const [yy, mm, dd] = e.target.value.split('-').map(Number);
-            setEndDate(new Date(yy, mm - 1, dd));
-          }}
-        />
+      <div className="card mb-3">
+        <div className="card-body d-flex align-items-center gap-2" style={{ gap: 12 }}>
+          <label className="form-label mb-0">Range:</label>
+          <select className="form-select" style={{ width: 160 }} value={rangeDays} onChange={(e) => setRangeDays(Number(e.target.value))}>
+            <option value={30}>Last 30 days</option>
+            <option value={90}>Last 90 days</option>
+            <option value={180}>Last 180 days</option>
+          </select>
+          <label className="form-label mb-0 ms-3">End date:</label>
+          <input
+            type="date"
+            className="form-control"
+            style={{ width: 170 }}
+            value={(() => {
+              const dt = endDate;
+              const y = dt.getFullYear();
+              const m = String(dt.getMonth() + 1).padStart(2, '0');
+              const d = String(dt.getDate()).padStart(2, '0');
+              return `${y}-${m}-${d}`;
+            })()}
+            onChange={(e) => {
+              const [yy, mm, dd] = e.target.value.split('-').map(Number);
+              setEndDate(new Date(yy, mm - 1, dd));
+            }}
+          />
+        </div>
       </div>
 
       {loading && <div className="text-muted">Loading…</div>}
@@ -174,39 +178,41 @@ export default function Analytics() {
       )}
 
       {!loading && series.length > 0 && (
-        <div style={{ overflowX: 'auto' }}>
-          <svg width={width} height={height} style={{ maxWidth: '100%' }}>
-            {/* Y grid and labels */}
-            {yTicks.map(v => {
-              const t = yMax === 0 ? 0 : v / yMax;
-              const y = margin.top + innerH - t * innerH;
-              return (
-                <g key={v}>
-                  <line x1={margin.left} y1={y} x2={width - margin.right} y2={y} stroke="#eee" />
-                  <text x={margin.left - 8} y={y} textAnchor="end" dominantBaseline="middle" fontSize="10">{v}</text>
+        <div className="card">
+          <div className="card-body" style={{ overflowX: 'auto' }}>
+            <svg width={width} height={height} style={{ maxWidth: '100%' }}>
+              {/* Y grid and labels */}
+              {yTicks.map(v => {
+                const t = yMax === 0 ? 0 : v / yMax;
+                const y = margin.top + innerH - t * innerH;
+                return (
+                  <g key={v}>
+                    <line x1={margin.left} y1={y} x2={width - margin.right} y2={y} stroke="#eee" />
+                    <text x={margin.left - 8} y={y} textAnchor="end" dominantBaseline="middle" fontSize="10">{v}</text>
+                  </g>
+                );
+              })}
+
+              {/* X axis */}
+              <line x1={margin.left} y1={margin.top + innerH} x2={width - margin.right} y2={margin.top + innerH} stroke="#ccc" />
+              {xTicks.map((t, i) => (
+                <g key={i}>
+                  <line x1={t.x} y1={margin.top + innerH} x2={t.x} y2={margin.top + innerH + 4} stroke="#888" />
+                  <text x={t.x} y={margin.top + innerH + 18} textAnchor="middle" fontSize="10">{t.label}</text>
                 </g>
-              );
-            })}
+              ))}
 
-            {/* X axis */}
-            <line x1={margin.left} y1={margin.top + innerH} x2={width - margin.right} y2={margin.top + innerH} stroke="#ccc" />
-            {xTicks.map((t, i) => (
-              <g key={i}>
-                <line x1={t.x} y1={margin.top + innerH} x2={t.x} y2={margin.top + innerH + 4} stroke="#888" />
-                <text x={t.x} y={margin.top + innerH + 18} textAnchor="middle" fontSize="10">{t.label}</text>
-              </g>
-            ))}
+              {/* Missing segments (no data): grey dashed at recorded values (0) */}
+              {missingPaths.map((d, i) => (
+                <path key={`m-${i}`} d={d} fill="none" stroke="#adb5bd" strokeWidth="2" strokeDasharray="4 4" />
+              ))}
 
-            {/* Missing segments (no data): grey dashed at recorded values (0) */}
-            {missingPaths.map((d, i) => (
-              <path key={`m-${i}`} d={d} fill="none" stroke="#adb5bd" strokeWidth="2" strokeDasharray="4 4" />
-            ))}
-
-            {/* Data segments: blue */}
-            {dataPaths.map((d, i) => (
-              <path key={`d-${i}`} d={d} fill="none" stroke="#0d6efd" strokeWidth="2" />
-            ))}
-          </svg>
+              {/* Data segments: blue */}
+              {dataPaths.map((d, i) => (
+                <path key={`d-${i}`} d={d} fill="none" stroke="#0d6efd" strokeWidth="2" />
+              ))}
+            </svg>
+          </div>
         </div>
       )}
     </div>
