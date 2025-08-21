@@ -9,7 +9,23 @@ const profileSchema = new Schema({
   age: { type: Number, min: 0, max: 120, default: null },
   heightCm: { type: Number, min: 0, max: 300, default: null },
   weightKg: { type: Number, min: 0, max: 500, default: null },
-  activityLevel: { type: String, enum: ['sedentary', 'light', 'moderate', 'active', 'very_active', ''], default: '' },
+  medicalIssue: { type: Boolean, default: false },
+  medicalIssueDescription: { type: String, default: '' },
+  isTrainer: { type: Boolean, default: false },
+  trainerDescription: { type: String, default: '' },
+  trainerContactPhone: { type: String, default: '' },
+  trainerContactEmail: { type: String, default: '' },
+  socialLinks: {
+    type: [
+      {
+        platform: { type: String, default: '' },
+        url: { type: String, default: '' },
+      }
+    ],
+    default: []
+  },
+  avatarUrl: { type: String, default: '' },
+  avatarFileId: { type: Schema.Types.ObjectId, default: null },
 }, { timestamps: true });
 
 const Profile = mongoose.model('Profile', profileSchema);
