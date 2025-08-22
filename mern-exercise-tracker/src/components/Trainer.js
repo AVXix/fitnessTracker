@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Trainer() {
   const [trainers, setTrainers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState('');
   const [expanded, setExpanded] = useState({});
+  const { user } = useAuth();
+  const [userRatings, setUserRatings] = useState({});
 
   const fetchTrainers = () => {
     setLoading(true);
@@ -23,6 +26,28 @@ export default function Trainer() {
   };
 
   useEffect(() => { fetchTrainers(); }, []);
+
+  const submitRating = async (trainerEmail, rating) => {
+    if (!user || !user.email) return; // should not happen if UI checks
+    // optimistic UI
+    setUserRatings(prev => ({ ...prev, [trainerEmail]: rating }));
+    try {
+      const res = await fetch(`http://localhost:5000/profile/rate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trainerEmail, userEmail: user.email, rating })
+      });
+      if (!res.ok) throw new Error('Failed');
+      const d = await res.json();
+      // update local trainers state with new avg/count
+      setTrainers(prev => prev.map(t => t.userEmail === trainerEmail ? { ...t, avgRating: d.avgRating, reviewCount: d.reviewCount } : t));
+    } catch (e) {
+      console.error('Rating failed', e);
+      alert('Failed to submit rating');
+      // rollback optimistic
+      setUserRatings(prev => { const copy = { ...prev }; delete copy[trainerEmail]; return copy; });
+    }
+  };
 
   const toggleExpand = (email) => {
     setExpanded(prev => ({ ...prev, [email]: !prev[email] }));
@@ -45,8 +70,8 @@ export default function Trainer() {
         <div className="row g-3">
           {trainers.length === 0 && <div className="text-muted">No trainers found.</div>}
           {trainers.map(t => (
-            <div className="col-md-6" key={t.userEmail}>
-              <div className="card h-100">
+            <div className="col-12" key={t.userEmail}>
+              <div className="card h-100 w-100">
                 <div className="card-body">
                   <div className="d-flex">
                     <div style={{ width: 120, flexShrink: 0 }}>
@@ -61,7 +86,20 @@ export default function Trainer() {
 
                     <div style={{ flex: 1 }} className="ms-3">
                       <div className="d-flex justify-content-between align-items-start">
-                        <h5 className="card-title mb-1">{t.name || t.userEmail}</h5>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div>
+                            <h5 className="card-title mb-1" style={{ margin: 0 }}>{t.name || t.userEmail}</h5>
+                            <div style={{ fontSize: 12 }}>
+                              {t.avgRating == null ? (
+                                <span className="text-muted">No reviews yet</span>
+                              ) : (
+                                <span className="text-primary">{Number(t.avgRating).toFixed(1)} / 5</span>
+                              )}
+                              {' '}
+                              <span className="text-muted">{t.reviewCount ? `(${t.reviewCount} review${t.reviewCount > 1 ? 's' : ''})` : ''}</span>
+                            </div>
+                          </div>
+                        </div>
                         <small className="text-muted">{t.age ? `${t.age} yrs` : ''}</small>
                       </div>
 
@@ -85,7 +123,7 @@ export default function Trainer() {
                         <button type="button" className="btn btn-sm btn-outline-info me-2" onClick={() => toggleExpand(`details:${t.userEmail}`)}>
                           {expanded[`details:${t.userEmail}`] ? 'Hide details' : 'Details'}
                         </button>
-                        <small className="text-muted ms-auto">Joined: {new Date(t.createdAt).toLocaleDateString?.() || ''}</small>
+                        <small className="text-muted ms-2">Joined: {new Date(t.createdAt).toLocaleDateString?.() || ''}</small>
                       </div>
 
                       {expanded[`details:${t.userEmail}`] && (
@@ -117,6 +155,28 @@ export default function Trainer() {
                               </ul>
                             </div>
                           )}
+
+                          {/* Rating UI */}
+                          <div className="mt-3 border-top pt-2">
+                            <strong style={{ fontSize: 14 }}>Rate this trainer</strong>
+                            <div className="d-flex align-items-center mt-2" style={{ gap: 6 }}>
+                              {user && user.email ? (
+                                <div>
+                                  {[1,2,3,4,5].map(i => {
+                                    const filled = (userRatings[t.userEmail] ?? (t.avgRating ? Math.round(t.avgRating) : 0)) >= i;
+                                    return (
+                                      <button key={i} type="button" className={`btn btn-sm ${filled ? 'btn-warning' : 'btn-outline-secondary'}`} style={{ padding: '4px 8px', lineHeight: 1 }} onClick={() => submitRating(t.userEmail, i)} aria-label={`${i} star`}>
+                                        <span style={{ fontWeight: 600 }}>{filled ? '★' : '☆'}</span>
+                                      </button>
+                                    );
+                                  })}
+                                  <span className="text-muted ms-2" style={{ fontSize: 13 }}>{t.reviewCount ? `${t.reviewCount} review${t.reviewCount > 1 ? 's' : ''}` : 'No reviews'}</span>
+                                </div>
+                              ) : (
+                                <small className="text-muted">Sign in to leave a rating</small>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>

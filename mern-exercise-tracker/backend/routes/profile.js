@@ -88,8 +88,42 @@ router.get('/trainers', async (req, res) => {
       filter.$or = [ { name: re }, { trainerDescription: re }, { 'socialLinks.url': re } ];
     }
     const docs = await Profile.find(filter).select('-__v').lean().exec();
-    res.json(docs || []);
+    // compute avgRating and reviewCount for each trainer
+    const out = (docs || []).map(d => {
+      const reviews = Array.isArray(d.reviews) ? d.reviews : [];
+      const reviewCount = reviews.length;
+      const avgRating = reviewCount === 0 ? null : (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviewCount);
+      return { ...d, reviewCount, avgRating };
+    });
+    res.json(out);
   } catch (err) {
     res.status(400).json({ message: 'Error fetching trainers', error: String(err) });
+  }
+});
+
+// Rate a trainer (upsert per user)
+router.post('/rate', async (req, res) => {
+  try {
+    const { trainerEmail, userEmail, rating } = req.body;
+    if (!trainerEmail || !userEmail) return res.status(400).json({ message: 'trainerEmail and userEmail are required' });
+    const r = parseInt(rating, 10);
+    if (!r || r < 1 || r > 5) return res.status(400).json({ message: 'rating must be an integer 1..5' });
+
+    const profile = await Profile.findOne({ userEmail: trainerEmail }).exec();
+    if (!profile) return res.status(404).json({ message: 'Trainer not found' });
+
+    // remove existing review by this user
+    profile.reviews = (profile.reviews || []).filter(rv => rv.userEmail !== userEmail);
+    // add new review
+    profile.reviews.push({ userEmail, rating: r });
+    await profile.save();
+
+    const reviews = profile.reviews || [];
+    const reviewCount = reviews.length;
+    const avgRating = reviewCount === 0 ? null : (reviews.reduce((s, rr) => s + (rr.rating || 0), 0) / reviewCount);
+
+    res.json({ message: 'Rated', reviewCount, avgRating });
+  } catch (err) {
+    res.status(400).json({ message: 'Error saving rating', error: String(err) });
   }
 });

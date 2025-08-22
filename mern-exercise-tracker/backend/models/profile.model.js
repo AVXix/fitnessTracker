@@ -26,6 +26,17 @@ const profileSchema = new Schema({
   },
   avatarUrl: { type: String, default: '' },
   avatarFileId: { type: Schema.Types.ObjectId, default: null },
+  // trainer ratings / reviews
+  reviews: {
+    type: [
+      {
+        userEmail: { type: String, required: true, trim: true },
+        rating: { type: Number, min: 1, max: 5 },
+        createdAt: { type: Date, default: Date.now }
+      }
+    ],
+    default: []
+  },
 }, { timestamps: true });
 
 const Profile = mongoose.model('Profile', profileSchema);
