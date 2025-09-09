@@ -34,6 +34,10 @@ export default class Navbar extends Component {
                   </li>
 
                   <li className="nav-item">
+                    <Link to="/weight" className="nav-link">Weight tracker</Link>
+                  </li>
+
+                  <li className="nav-item">
                     <Link to="/analytics" className="nav-link">Analytics</Link>
                   </li>
 

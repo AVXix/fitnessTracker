@@ -29,15 +29,17 @@ const caloriesRouter = require('./routes/calories');
 const profileRouter = require('./routes/profile');
 const storeRouter = require('./routes/store');
 const forumRouter = require('./routes/forum');
+const weightRouter = require('./routes/weights'); // Changed from './routes/weight' to './routes/weights'
 
 app.use('/exercises', exercisesRouter);
-app.use('/users', usersRouter); // still used for signup/login
+app.use('/users', usersRouter);
 app.use('/workout', workoutRouter);
 app.use('/goals', goalsRouter);
 app.use('/calories', caloriesRouter);
 app.use('/profile', profileRouter);
 app.use('/store', storeRouter);
 app.use('/forum', forumRouter);
+app.use('/weight', weightRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
