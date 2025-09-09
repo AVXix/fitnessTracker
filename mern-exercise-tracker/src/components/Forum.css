@@ -1,0 +1,350 @@
+.forum-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+.forum-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border-radius: 15px;
+}
+
+.forum-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2rem;
+}
+
+.forum-header p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.forum-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.forum-filters {
+  display: flex;
+  gap: 15px;
+}
+
+.filter-select {
+  padding: 8px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+}
+
+.ask-question-btn {
+  background: #2196F3;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ask-question-btn:hover {
+  background: #1976D2;
+}
+
+.forum-loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.no-questions {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  background: #f9f9f9;
+  border-radius: 12px;
+}
+
+.no-questions h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.question-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.question-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.question-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-tag {
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.category-tag.nutrition { background: #e8f5e8; color: #2e7d32; }
+.category-tag.workout { background: #fff3e0; color: #f57c00; }
+.category-tag.supplements { background: #e3f2fd; color: #1976d2; }
+.category-tag.weight { background: #fce4ec; color: #c2185b; }
+.category-tag.muscle { background: #f3e5f5; color: #7b1fa2; }
+.category-tag.general { background: #f5f5f5; color: #616161; }
+.category-tag.weight-loss { background: #fce4ec; color: #c2185b; }
+.category-tag.muscle-gain { background: #f3e5f5; color: #7b1fa2; }
+
+.question-time {
+  color: #999;
+  font-size: 12px;
+}
+
+.question-title {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.question-content {
+  color: #666;
+  line-height: 1.6;
+  margin: 12px 0 20px 0;
+}
+
+.question-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 15px;
+}
+
+.question-author strong {
+  color: #333;
+  font-size: 14px;
+}
+
+.question-stats {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.stat {
+  font-size: 12px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.answered {
+  background: #e8f5e8;
+  color: #2e7d32;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* Question Form Styles */
+.question-form {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.question-form h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+}
+
+.question-input,
+.category-select,
+.question-textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.question-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.question-input:focus,
+.category-select:focus,
+.question-textarea:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.post-btn {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.post-btn:hover {
+  background: #45a049;
+}
+
+.cancel-btn {
+  background: #999;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background: #777;
+}
+
+/* Error and Info Messages */
+.forum-error {
+  text-align: center;
+  padding: 40px 20px;
+  color: #d32f2f;
+  background: #ffebee;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.form-error {
+  background: #ffebee;
+  color: #d32f2f;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ffcdd2;
+}
+
+.form-info {
+  margin-bottom: 15px;
+  color: #666;
+}
+
+.form-info strong {
+  color: #333;
+}
+
+/* Disabled and Loading States */
+.question-input:disabled,
+.category-select:disabled,
+.question-textarea:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.post-btn:disabled,
+.cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .forum-container {
+    padding: 10px;
+  }
+  
+  .forum-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .question-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .form-buttons {
+    flex-direction: column;
+  }
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.delete-btn:hover {
+  background: #ffebee;
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+}
+
+.test-message {
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  background: #e3f2fd;
+  border-radius: 8px;
+  color: #1565c0;
+  font-size: 12px;
+}

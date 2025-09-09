@@ -38,6 +38,10 @@ export default class Navbar extends Component {
                   </li>
 
                   <li className="nav-item">
+                    <Link to="/forum" className="nav-link">Forum</Link>
+                  </li>
+
+                  <li className="nav-item">
                     <Link to="/store" className="nav-link">Store</Link>
                   </li>
 

@@ -16,6 +16,7 @@ import Analytics from './components/Analytics';
 import Store from './components/Store';
 import Trainer from './components/Trainer';
 import Profile from './components/Profile';
+import Forum from './components/Forum';
 
 function PrivateRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -35,6 +36,7 @@ function AppRoutes() {
       <Route path="/goals" element={<PrivateRoute><Goals /></PrivateRoute>} />
       <Route path="/calories" element={<PrivateRoute><Calories /></PrivateRoute>} />
       <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
+      <Route path="/forum" element={<PrivateRoute><Forum /></PrivateRoute>} />
       <Route path="/store" element={<PrivateRoute><Store /></PrivateRoute>} />
       <Route path="/trainer" element={<PrivateRoute><Trainer /></PrivateRoute>} />
       <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
