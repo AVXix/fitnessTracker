@@ -36,6 +36,11 @@ export default function Analytics() {
 
   const [yMaxAuto, setYMaxAuto] = useState(0);
 
+  // NEW state
+  const [profile, setProfile] = useState(null);
+  const [avgAverages, setAvgAverages] = useState({ weeklyAverage: 0, monthlyAverage: 0 });
+  const [recState, setRecState] = useState({ bmr: null, maintenanceMid: null, maintenanceLow: null, maintenanceHigh: null });
+
   const startUTC = useMemo(() => {
     const endUTC = toUTCDateOnly(endDate);
     const start = new Date(endUTC);
@@ -65,6 +70,72 @@ export default function Analytics() {
       .catch(() => setError('Failed to load data'))
       .finally(() => setLoading(false));
   }, [user?.email, startUTC, endUTC]);
+
+  // Fetch profile
+  useEffect(() => {
+    if (!user?.email) return;
+    const qs = new URLSearchParams({ userEmail: user.email });
+    fetch(`http://localhost:5000/profile?${qs.toString()}`)
+      .then(r => r.json())
+      .then(doc => setProfile(doc || null))
+      .catch(() => setProfile(null));
+  }, [user?.email]);
+
+  // Fetch weekly/monthly averages (uses today's date)
+  useEffect(() => {
+    if (!user?.email) return;
+    const today = new Date().toISOString().slice(0,10);
+    const qs = new URLSearchParams({ userEmail: user.email, date: today });
+    fetch(`http://localhost:5000/calories/averages?${qs.toString()}`)
+      .then(r => r.json())
+      .then(setAvgAverages)
+      .catch(() => {});
+  }, [user?.email]);
+
+  // Compute recommendations when profile changes
+  useEffect(() => {
+    if (!profile) {
+      setRecState({ bmr: null, maintenanceMid: null, maintenanceLow: null, maintenanceHigh: null });
+      return;
+    }
+    const { age, heightCm, weightKg, sex } = profile;
+    if (!(age && heightCm && weightKg)) {
+      setRecState({ bmr: null, maintenanceMid: null, maintenanceLow: null, maintenanceHigh: null });
+      return;
+    }
+    // Mifflin-St Jeor
+    let base = 10 * weightKg + 6.25 * heightCm - 5 * age;
+    if (sex === 'male') base += 5;
+    else if (sex === 'female') base -= 161;
+    // Activity range (sedentary to moderately active)
+    const maintenanceLow = Math.round(base * 1.2);
+    const maintenanceHigh = Math.round(base * 1.55);
+    const maintenanceMid = Math.round((maintenanceLow + maintenanceHigh) / 2);
+    setRecState({
+      bmr: Math.round(base),
+      maintenanceLow,
+      maintenanceHigh,
+      maintenanceMid
+    });
+  }, [profile]);
+
+  // Helper differences
+  const weeklyDiff = useMemo(() => {
+    if (!recState.maintenanceMid) return null;
+    return avgAverages.weeklyAverage ? avgAverages.weeklyAverage - recState.maintenanceMid : null;
+  }, [avgAverages.weeklyAverage, recState.maintenanceMid]);
+
+  // Suggested targets (simple defaults)
+  const targets = useMemo(() => {
+    if (!recState.maintenanceMid) return null;
+    return {
+      maintain: recState.maintenanceMid,
+      loseSlow: recState.maintenanceMid - 300,   // ~0.25 kg/week
+      loseFast: recState.maintenanceMid - 500,   // ~0.5 kg/week
+      gainSlow: recState.maintenanceMid + 250,   // lean gain
+      gainFast: recState.maintenanceMid + 400,
+    };
+  }, [recState.maintenanceMid]);
 
   // Chart dimensions
   const width = 900;
@@ -142,6 +213,58 @@ export default function Analytics() {
         <h2 className="mb-0">Analytics</h2>
       </div>
 
+      {/* NEW: Calorie Recommendation Panel */}
+      <div className="card mb-3">
+        <div className="card-body">
+          <h5 className="mb-3">Calorie Recommendations</h5>
+          {!profile && (
+            <div className="text-muted small">Loading profile…</div>
+          )}
+          {profile && !recState.bmr && (
+            <div className="text-warning small">
+              Add age, height and weight in your Profile to see personalized targets.
+            </div>
+          )}
+          {profile && recState.bmr && (
+            <div className="row g-3">
+              <div className="col-md-3">
+                <div className="small text-muted">BMR</div>
+                <div className="fw-semibold">{recState.bmr} kcal</div>
+                <div className="small text-muted">≈ calories if you rested all day</div>
+              </div>
+              <div className="col-md-3">
+                <div className="small text-muted">Maintenance Range</div>
+                <div className="fw-semibold">{recState.maintenanceLow} – {recState.maintenanceHigh}</div>
+                <div className="small text-muted">Low–moderate activity</div>
+              </div>
+              <div className="col-md-3">
+                <div className="small text-muted">Your Weekly Avg</div>
+                <div className="fw-semibold">{avgAverages.weeklyAverage} kcal</div>
+                {weeklyDiff !== null && (
+                  <div className={`small ${weeklyDiff > 0 ? 'text-danger' : 'text-success'}`}>
+                    {weeklyDiff === 0 ? 'On target'
+                      : (weeklyDiff > 0 ? `+${weeklyDiff} above` : `${weeklyDiff} below`)}
+                  </div>
+                )}
+              </div>
+              <div className="col-md-3">
+                <div className="small text-muted">Targets</div>
+                {targets && (
+                  <ul className="list-unstyled mb-0 small">
+                    <li>Maintain: {targets.maintain}</li>
+                    <li>Lose (slow): {targets.loseSlow}</li>
+                    <li>Lose (faster): {targets.loseFast}</li>
+                    <li>Gain (slow): {targets.gainSlow}</li>
+                    <li>Gain (faster): {targets.gainFast}</li>
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Existing range controls + chart below */}
       <div className="card mb-3">
         <div className="card-body d-flex align-items-center gap-2" style={{ gap: 12 }}>
           <label className="form-label mb-0">Range:</label>

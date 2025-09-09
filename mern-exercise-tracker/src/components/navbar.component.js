@@ -22,15 +22,7 @@ export default class Navbar extends Component {
               <>
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                   <li className="nav-item">
-                    <Link to="/workouts" className="nav-link">Current workouts</Link>
-                  </li>
-
-                  <li className="nav-item">
-                    <Link to="/workout" className="nav-link">Create a workout</Link>
-                  </li>
-
-                  <li className="nav-item">
-                    <Link to="/create" className="nav-link">Workout details</Link>
+                    <Link to="/workouts" className="nav-link">Workouts</Link>
                   </li>
                   
                   <li className="nav-item">

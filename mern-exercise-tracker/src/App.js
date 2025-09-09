@@ -5,12 +5,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Navbar from "./components/navbar.component";
 import ExercisesList from "./components/exercises-list.component";
 import EditExercise from "./components/edit-exercise.component";
-import CreateExercise from "./components/create-exercise.component";
-import CreateWorkout from "./components/create-workout.component";
+import WorkoutBuilder from "./components/WorkoutBuilder";
+import Home from "./components/Home";
 import SignIn from './components/auth/SignIn';
 import SignUp from './components/auth/SignUp';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import WorkoutsPage from './components/WorkoutsPage';
 import Goals from './components/Goals';
 import Calories from './components/Calories';
 import Analytics from './components/Analytics';
@@ -29,11 +28,9 @@ function AppRoutes() {
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
 
-      <Route path="/" element={<Navigate to="/workouts" replace />} />
-      <Route path="/workouts" element={<PrivateRoute><WorkoutsPage /></PrivateRoute>} />
+      <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+      <Route path="/workouts" element={<PrivateRoute><WorkoutBuilder /></PrivateRoute>} />
       <Route path="/edit/:id" element={<PrivateRoute><EditExercise /></PrivateRoute>} />
-      <Route path="/create" element={<PrivateRoute><CreateExercise /></PrivateRoute>} />
-      <Route path="/workout" element={<PrivateRoute><CreateWorkout /></PrivateRoute>} />
 
       <Route path="/goals" element={<PrivateRoute><Goals /></PrivateRoute>} />
       <Route path="/calories" element={<PrivateRoute><Calories /></PrivateRoute>} />
@@ -42,7 +39,7 @@ function AppRoutes() {
       <Route path="/trainer" element={<PrivateRoute><Trainer /></PrivateRoute>} />
       <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
 
-      <Route path="*" element={<Navigate to="/workouts" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
