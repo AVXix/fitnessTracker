@@ -1,17 +1,3 @@
-// // filepath: mern-exercise-tracker/src/App.js
-// import SignupForm from './SignupForm';
-// import './App.css';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <SignupForm />
-//     </div>
-//   );
-// }
-
-// export default App;
-
 import React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
