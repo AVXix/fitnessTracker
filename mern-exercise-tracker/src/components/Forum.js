@@ -9,6 +9,8 @@ const Forum = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [error, setError] = useState(null);
   const [testMessage, setTestMessage] = useState('');
+  const [comments, setComments] = useState({});
+  const [showComments, setShowComments] = useState({});
   const { user } = useAuth();
 
   const categories = ['All', 'Nutrition', 'Workout', 'Supplements', 'Weight Loss', 'Muscle Gain', 'General'];
@@ -142,6 +144,35 @@ const Forum = () => {
     return currentUser === postAuthor;
   };
 
+  // Fetch comments for a specific post
+  const fetchComments = async (postId) => {
+    try {
+      const response = await fetch(`/comments/${postId}`);
+      if (response.ok) {
+        const commentsData = await response.json();
+        setComments(prev => ({
+          ...prev,
+          [postId]: commentsData
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+
+  // Toggle comments visibility
+  const toggleComments = (postId) => {
+    setShowComments(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
+    
+    // Fetch comments if showing for the first time
+    if (!showComments[postId] && !comments[postId]) {
+      fetchComments(postId);
+    }
+  };
+
   if (loading) return <div className="forum-loading">Loading forum...</div>;
 
   return (
@@ -226,6 +257,42 @@ const Forum = () => {
                   <span className="stat">💬 {post.replies ? post.replies.length : 0}</span>
                   {post.isAnswered && <span className="answered">✅ Solved</span>}
                 </div>
+              </div>
+
+              {/* Comments Section */}
+              <div className="comments-section">
+                <button 
+                  className="comments-toggle-btn"
+                  onClick={() => toggleComments(post._id)}
+                >
+                  {showComments[post._id] ? 'Hide Comments' : 'Show Comments'}
+                  {comments[post._id] && ` (${comments[post._id].length})`}
+                </button>
+
+                {showComments[post._id] && (
+                  <div className="comments-container">
+                    <CommentForm 
+                      postId={post._id}
+                      userName={getUserName()}
+                      onCommentAdded={() => fetchComments(post._id)}
+                    />
+                    
+                    <div className="comments-list">
+                      {comments[post._id] && comments[post._id].length > 0 ? (
+                        comments[post._id].map(comment => (
+                          <CommentItem 
+                            key={comment._id}
+                            comment={comment}
+                            currentUser={getUserName()}
+                            onCommentDeleted={() => fetchComments(post._id)}
+                          />
+                        ))
+                      ) : (
+                        <p className="no-comments">No comments yet. Be the first to comment!</p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))
@@ -351,6 +418,155 @@ const SimpleQuestionForm = ({ onPostCreated, onCancel, userName }) => {
           </button>
         </div>
       </form>
+    </div>
+  );
+};
+
+// Comment Form Component
+const CommentForm = ({ postId, userName, onCommentAdded }) => {
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!comment.trim()) return;
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/comments/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: comment.trim(),
+          author: userName,
+          postId: postId
+        }),
+      });
+
+      if (response.ok) {
+        setComment('');
+        onCommentAdded();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add comment');
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      setError('Failed to add comment: ' + error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="comment-form">
+      <form onSubmit={handleSubmit}>
+        <div className="comment-input-container">
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Write a comment..."
+            className="comment-input"
+            rows="3"
+            maxLength={500}
+            disabled={submitting}
+          />
+          <div className="comment-form-footer">
+            <small className="character-count">
+              {comment.length}/500
+            </small>
+            <button 
+              type="submit" 
+              className="comment-submit-btn"
+              disabled={submitting || !comment.trim()}
+            >
+              {submitting ? 'Sending...' : 'Send'}
+            </button>
+          </div>
+        </div>
+        {error && <div className="comment-error">{error}</div>}
+      </form>
+    </div>
+  );
+};
+
+// Comment Item Component
+const CommentItem = ({ comment, currentUser, onCommentDeleted }) => {
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const response = await fetch(`/comments/${comment._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ author: comment.author }),
+      });
+
+      if (response.ok) {
+        onCommentDeleted();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete comment');
+      }
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      alert('Failed to delete comment: ' + error.message);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const formatCommentTime = (dateString) => {
+    const now = new Date();
+    const commentDate = new Date(dateString);
+    const diffTime = Math.abs(now - commentDate);
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    
+    if (diffMinutes < 1) return 'Just now';
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return commentDate.toLocaleDateString();
+  };
+
+  const canDelete = currentUser === comment.author;
+
+  return (
+    <div className="comment-item">
+      <div className="comment-header">
+        <strong className="comment-author">{comment.author}</strong>
+        <span className="comment-time">{formatCommentTime(comment.createdAt)}</span>
+        {canDelete && (
+          <button
+            className="comment-delete-btn"
+            onClick={handleDelete}
+            disabled={deleting}
+            title="Delete comment"
+          >
+            {deleting ? '...' : '🗑️'}
+          </button>
+        )}
+      </div>
+      <div className="comment-content">
+        {comment.content}
+      </div>
+      {comment.likes > 0 && (
+        <div className="comment-likes">
+          ❤️ {comment.likes}
+        </div>
+      )}
     </div>
   );
 };
