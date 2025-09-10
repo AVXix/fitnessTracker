@@ -2,8 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function WorkoutBuilder() {
+  const { user } = useAuth();
+  const userEmail = user?.email || '';
   const [workouts, setWorkouts] = useState([]);
   const [newWorkoutName, setNewWorkoutName] = useState('');
   const [selectedWorkout, setSelectedWorkout] = useState('');
@@ -25,7 +28,13 @@ export default function WorkoutBuilder() {
   // Load workouts
   const fetchWorkouts = () => {
     setLoadingWorkouts(true);
-    axios.get(api.workouts)
+    if (!userEmail) {
+      setWorkouts([]);
+      setSelectedWorkout('');
+      setLoadingWorkouts(false);
+      return;
+    }
+    axios.get(api.workouts, { params: { userEmail } })
       .then(res => {
         const names = res.data.map(w => w.username);
         setWorkouts(names);
@@ -45,13 +54,14 @@ export default function WorkoutBuilder() {
   useEffect(() => {
     fetchWorkouts();
     fetchExercises();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userEmail]);
 
   const handleAddWorkout = (e) => {
     e.preventDefault();
     const trimmed = newWorkoutName.trim();
     if (!trimmed) return;
-    axios.post(api.addWorkout, { username: trimmed })
+  axios.post(api.addWorkout, { userEmail, username: trimmed })
       .then(() => {
         setNewWorkoutName('');
         // Optimistic update

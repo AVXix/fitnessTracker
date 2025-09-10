@@ -27,7 +27,9 @@ export default class CreateExercise extends Component {
 
   componentDidMount() {
     console.log('Fetching workouts from API...');
-    axios.get('http://localhost:5000/workout/')
+    const saved = localStorage.getItem('authUser');
+    const email = saved ? (JSON.parse(saved).email || '') : '';
+    axios.get('http://localhost:5000/workout/', { params: { userEmail: email } })
       .then(response => {
         console.log('API response:', response.data);
         if (response.data.length > 0) {

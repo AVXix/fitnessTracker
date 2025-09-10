@@ -18,7 +18,12 @@ export default function Home() {
   const loadWorkouts = () => {
     setLoadingWorkouts(true);
     setErrorWorkouts('');
-    axios.get('http://localhost:5000/workout/')
+    if (!user?.email) {
+      setWorkouts([]);
+      setLoadingWorkouts(false);
+      return;
+    }
+    axios.get('http://localhost:5000/workout/', { params: { userEmail: user.email } })
       .then(res => {
         const names = Array.isArray(res.data) ? res.data.map(w => w.username) : [];
         setWorkouts(names);

@@ -36,8 +36,10 @@ export default class EditExercise extends Component {
         console.log(error);
       })
 
-    // Load workouts (stored under `username` field) for the dropdown
-    axios.get('http://localhost:5000/workout/')
+  // Load workouts for the current user for the dropdown
+  const saved = localStorage.getItem('authUser');
+  const email = saved ? (JSON.parse(saved).email || '') : '';
+  axios.get('http://localhost:5000/workout/', { params: { userEmail: email } })
       .then(response => {
         if (response.data.length > 0) {
           this.setState({
