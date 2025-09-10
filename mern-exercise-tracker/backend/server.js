@@ -28,6 +28,7 @@ const goalsRouter = require('./routes/goals');
 const caloriesRouter = require('./routes/calories');
 const profileRouter = require('./routes/profile');
 const storeRouter = require('./routes/store');
+const ordersRouter = require('./routes/orders');
 const forumRouter = require('./routes/forum');
 const commentsRouter = require('./routes/comments');
 const weightRouter = require('./routes/weights'); // Changed from './routes/weight' to './routes/weights'
@@ -39,6 +40,7 @@ app.use('/goals', goalsRouter);
 app.use('/calories', caloriesRouter);
 app.use('/profile', profileRouter);
 app.use('/store', storeRouter);
+app.use('/orders', ordersRouter);
 app.use('/forum', forumRouter);
 app.use('/comments', commentsRouter);
 app.use('/weight', weightRouter);

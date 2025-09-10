@@ -46,7 +46,11 @@ export default function WorkoutBuilder() {
   // Load all exercises then filter client-side (backend has no workout filter route in current code)
   const fetchExercises = () => {
     setLoadingExercises(true);
-    axios.get(api.exercises)
+    const params = {};
+    const saved = localStorage.getItem('authUser');
+    const email = saved ? (JSON.parse(saved).email || '') : '';
+    if (email) params.userEmail = email;
+    axios.get(api.exercises, { params })
       .then(res => setExercises(Array.isArray(res.data) ? res.data : []))
       .finally(() => setLoadingExercises(false));
   };
@@ -87,7 +91,10 @@ export default function WorkoutBuilder() {
       alert('Select a workout first');
       return;
     }
+    const saved = localStorage.getItem('authUser');
+    const email = saved ? (JSON.parse(saved).email || '') : '';
     const payload = {
+      userEmail: email,
       username: selectedWorkout,  // Keeping legacy field name
       description: exDescription,
       duration: Number(exDuration),

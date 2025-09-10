@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 export default function Home() {
   const { user } = useAuth() || {};
   const [workouts, setWorkouts] = useState([]);
+  const [exercises, setExercises] = useState([]);
   const [loadingWorkouts, setLoadingWorkouts] = useState(false);
   const [errorWorkouts, setErrorWorkouts] = useState('');
 
@@ -52,6 +53,27 @@ export default function Home() {
   const refreshAll = () => {
     loadWorkouts();
     loadAverages();
+    // Load exercises for details display
+    if (user?.email) {
+      axios.get('http://localhost:5000/exercises/', { params: { userEmail: user.email } })
+        .then(res => setExercises(Array.isArray(res.data) ? res.data : []))
+        .catch(() => setExercises([]));
+    } else {
+      setExercises([]);
+    }
+  };
+
+  const handleDeleteWorkout = async (name) => {
+    if (!user?.email) return;
+    if (!window.confirm(`Delete workout "${name}" and all its exercises?`)) return;
+    try {
+      await axios.delete(`http://localhost:5000/workout/${encodeURIComponent(name)}`, { params: { userEmail: user.email } });
+      // Remove from local state
+      setWorkouts(prev => prev.filter(w => w !== name));
+      setExercises(prev => prev.filter(e => e.username !== name));
+    } catch (e) {
+      alert(e.response?.data?.message || 'Failed to delete workout');
+    }
   };
 
   useEffect(() => {
@@ -131,16 +153,56 @@ export default function Home() {
       )}
 
       <div className="row g-3">
-        {workouts.map(name => (
-          <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={name}>
-            <div className="card h-100">
-              <div className="card-body d-flex flex-column">
-                <strong className="mb-1" style={{ fontSize: 14 }}>{name}</strong>
-                <small className="text-muted mt-auto">Workout</small>
+        {workouts.map(name => {
+          const exs = exercises.filter(e => e.username === name);
+          const count = exs.length;
+          const recentSorted = [...exs].sort((a,b) => new Date(b.date) - new Date(a.date));
+          const recent = recentSorted.slice(0, 3);
+          const lastDate = recentSorted[0]?.date ? new Date(recentSorted[0].date) : null;
+          const totalMinutes = exs.reduce((sum, e) => sum + (Number(e.duration) || 0), 0);
+          return (
+            <div className="col-12 col-sm-6 col-lg-4" key={name}>
+              <div className="card h-100">
+                <div className="card-body d-flex flex-column">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <strong className="mb-0" style={{ fontSize: 16 }}>{name}</strong>
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="badge text-bg-secondary" title="Exercise count">{count}</span>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleDeleteWorkout(name)}
+                        title="Delete workout"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                  {count === 0 ? (
+                    <div className="text-muted">No exercises yet.</div>
+                  ) : (
+                    <>
+                      <div className="text-muted small mb-1">
+                        Last session: {lastDate ? lastDate.toLocaleDateString() : 'N/A'}
+                      </div>
+                      <ul className="list-unstyled small mb-3" style={{ maxHeight: 100, overflowY: 'auto' }}>
+                        {recent.map(e => (
+                          <li key={e._id} className="d-flex justify-content-between">
+                            <span>{e.description}</span>
+                            <span className="text-muted ms-2">{e.duration}m</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  <div className="mt-auto d-flex justify-content-between text-muted small">
+                    <span>Total minutes: {totalMinutes}</span>
+                    {count > 3 && <span>+{count - 3} more</span>}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

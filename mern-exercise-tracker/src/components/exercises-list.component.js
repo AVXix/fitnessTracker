@@ -24,7 +24,10 @@ export default class ExercisesList extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/exercises/')
+    const saved = localStorage.getItem('authUser');
+    const email = saved ? (JSON.parse(saved).email || '') : '';
+    const params = email ? { userEmail: email } : {};
+    axios.get('http://localhost:5000/exercises/', { params })
       .then(response => {
         this.setState({ exercises: response.data })
       })
@@ -55,7 +58,7 @@ export default class ExercisesList extends Component {
         <table className="table">
           <thead className="thead-light">
             <tr>
-              <th>Username</th>
+              <th>Workout</th>
               <th>Description</th>
               <th>Duration</th>
               <th>Date</th>

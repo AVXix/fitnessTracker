@@ -1,5 +1,6 @@
 const router = require('express').Router();
 let Workout = require('../models/workout.model');
+let Exercise = require('../models/exercise.model');
 
 // GET workouts for a user: /workout?userEmail=...
 router.route('/').get(async (req, res) => {
@@ -33,3 +34,47 @@ router.route('/add').post(async (req, res) => {
 });
 
 module.exports = router;
+
+// Get workout details (counts, totals, last date) per workout for a user
+router.get('/details', async (req, res) => {
+  try {
+    const { userEmail } = req.query;
+    if (!userEmail) return res.status(400).json({ message: 'userEmail is required' });
+
+    const stats = await Exercise.aggregate([
+      { $match: { userEmail } },
+      { $group: {
+        _id: '$username',
+        exerciseCount: { $sum: 1 },
+        totalDuration: { $sum: '$duration' },
+        lastDate: { $max: '$date' },
+      }},
+      { $project: { _id: 0, username: '$_id', exerciseCount: 1, totalDuration: 1, lastDate: 1 } },
+      { $sort: { username: 1 } }
+    ]).exec();
+
+    res.json(stats);
+  } catch (err) {
+    res.status(400).json({ message: 'Error: ' + err });
+  }
+});
+
+// Delete a workout (and its exercises) by workout name for a user
+router.delete('/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const { userEmail } = req.query;
+    if (!userEmail) return res.status(400).json({ message: 'userEmail is required' });
+    if (!username) return res.status(400).json({ message: 'username is required' });
+
+    const [exResult] = await Promise.all([
+      Exercise.deleteMany({ userEmail, username }).exec(),
+      // deleteOne workout document
+      Workout.deleteOne({ userEmail, username }).exec(),
+    ]);
+
+    res.json({ message: 'Workout deleted', deletedExercises: exResult.deletedCount || 0, username });
+  } catch (err) {
+    res.status(400).json({ message: 'Error: ' + err });
+  }
+});

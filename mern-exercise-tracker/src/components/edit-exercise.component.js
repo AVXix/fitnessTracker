@@ -80,7 +80,10 @@ export default class EditExercise extends Component {
   onSubmit(e) {
     e.preventDefault();
 
+    const saved = localStorage.getItem('authUser');
+    const email = saved ? (JSON.parse(saved).email || '') : '';
     const exercise = {
+      userEmail: email,
       username: this.state.username,
       description: this.state.description,
       duration: this.state.duration,
