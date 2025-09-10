@@ -176,6 +176,61 @@
   gap: 4px;
 }
 
+.like-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #666;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.like-btn:hover {
+  background: #f0f0f0;
+}
+
+.like-btn.liked {
+  color: #e91e63;
+}
+
+.like-btn.liked .heart-emoji {
+  color: #e91e63;
+  animation: heartBeat 0.6s ease-in-out;
+}
+
+.heart-emoji {
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.3);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.2);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+.like-count {
+  font-weight: 500;
+}
+
 .answered {
   background: #e8f5e8;
   color: #2e7d32;

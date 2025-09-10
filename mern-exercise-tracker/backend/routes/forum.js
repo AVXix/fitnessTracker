@@ -82,4 +82,42 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Like/unlike a forum post
+router.post('/:id/like', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+    
+    console.log('Forum LIKE request received:', { id, userId });
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+    
+    const post = await Forum.findById(id);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    
+    const hasLiked = post.likedBy.includes(userId);
+    
+    if (hasLiked) {
+      // Unlike the post
+      post.likedBy = post.likedBy.filter(id => id !== userId);
+      post.likes = Math.max(0, post.likes - 1);
+    } else {
+      // Like the post
+      post.likedBy.push(userId);
+      post.likes = (post.likes || 0) + 1;
+    }
+    
+    await post.save();
+    console.log('Post like toggled successfully');
+    res.json({ likes: post.likes, hasLiked: !hasLiked });
+  } catch (err) {
+    console.error('Forum LIKE error:', err);
+    res.status(400).json({ error: 'Error toggling like: ' + err.message });
+  }
+});
+
 module.exports = router;

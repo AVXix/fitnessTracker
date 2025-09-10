@@ -11,6 +11,7 @@ const Forum = () => {
   const [testMessage, setTestMessage] = useState('');
   const [comments, setComments] = useState({});
   const [showComments, setShowComments] = useState({});
+  const [likedPosts, setLikedPosts] = useState(new Set());
   const { user } = useAuth();
 
   const categories = ['All', 'Nutrition', 'Workout', 'Supplements', 'Weight Loss', 'Muscle Gain', 'General'];
@@ -56,6 +57,17 @@ const Forum = () => {
       const data = await response.json();
       console.log('Fetched posts:', data); // Debug log
       setPosts(data);
+      
+      // Initialize liked posts based on current user
+      const currentUser = getUserName();
+      const likedPostIds = new Set();
+      data.forEach(post => {
+        if (post.likedBy && post.likedBy.includes(currentUser)) {
+          likedPostIds.add(post._id);
+        }
+      });
+      setLikedPosts(likedPostIds);
+      
       setLoading(false);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -173,6 +185,48 @@ const Forum = () => {
     }
   };
 
+  // Like/unlike a post
+  const toggleLike = async (postId) => {
+    const userId = getUserName();
+    const isLiked = likedPosts.has(postId);
+    
+    try {
+      const response = await fetch(`/forum/${postId}/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Update local state
+        setPosts(prevPosts => 
+          prevPosts.map(post => 
+            post._id === postId 
+              ? { ...post, likes: result.likes }
+              : post
+          )
+        );
+
+        // Update liked posts set
+        setLikedPosts(prev => {
+          const newSet = new Set(prev);
+          if (result.hasLiked) {
+            newSet.add(postId);
+          } else {
+            newSet.delete(postId);
+          }
+          return newSet;
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  };
+
   if (loading) return <div className="forum-loading">Loading forum...</div>;
 
   return (
@@ -252,9 +306,14 @@ const Forum = () => {
                 </div>
                 
                 <div className="question-stats">
-                  <span className="stat">👁️ {post.views || 0}</span>
-                  <span className="stat">❤️ {post.likes || 0}</span>
-                  <span className="stat">💬 {post.replies ? post.replies.length : 0}</span>
+                  <button 
+                    className={`like-btn ${likedPosts.has(post._id) ? 'liked' : ''}`}
+                    onClick={() => toggleLike(post._id)}
+                    title={likedPosts.has(post._id) ? 'Unlike this post' : 'Like this post'}
+                  >
+                    <span className="heart-emoji">❤️</span>
+                    <span className="like-count">{post.likes || 0}</span>
+                  </button>
                   {post.isAnswered && <span className="answered">✅ Solved</span>}
                 </div>
               </div>
