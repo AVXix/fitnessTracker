@@ -52,8 +52,6 @@
 .form-group { margin-bottom: 12px; }
 .form-control { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
 .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 12px; }
-.btn { padding: 8px 14px; border-radius: 6px; border: 1px solid #ccc; background: #f6f6f6; cursor: pointer; }
-.btn-primary { background: #007bff; color: #fff; border-color: #007bff; }
 .alert { padding: 8px 12px; border-radius: 6px; margin-bottom: 10px; }
 .alert-success { background: #e8f5e9; color: #1b5e20; }
 .alert-danger { background: #ffebee; color: #b71c1c; }

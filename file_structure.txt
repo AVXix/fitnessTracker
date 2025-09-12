@@ -1,90 +1,102 @@
-# MERN Fitness Tracker - Complete File Structure
+# MERN Fitness Tracker - Updated File Structure
 
-## Root Level
-├── package.json                      # Frontend dependencies and build scripts
-├── README.md                         # Project documentation and setup instructions
-└── file_structure.txt               # This file - project structure overview
+This reflects the current repository layout under `mern-exercise-tracker/`.
 
-## Backend (Node.js/Express API Server)
-backend/
-├── server.js                        # Main Express server - sets up routes, middleware, database connection
-├── add_users.js                     # Utility script for adding test users to database
-├── package.json                     # Backend dependencies (Express, Mongoose, Multer, CORS, etc.)
-├── config/                          # Configuration files directory (currently empty)
-├── middleware/                      # Custom Express middleware directory (currently empty)
-├── models/                          # MongoDB/Mongoose data schemas and models
-│   ├── auth.model.js               # Authentication data schema
-│   ├── calorie.model.js            # Calorie tracking data schema
-│   ├── exercise.model.js           # Exercise data schema (name, description, duration, etc.)
-│   ├── goal.model.js               # User goals schema (goal name, target date, description)
-│   ├── profile.model.js            # User profile schema (personal info, trainer details, medical info)
-│   ├── user.model.js               # User account schema (email, authentication)
-│   └── workout.model.js            # Workout session schema (exercises, sets, reps)
-└── routes/                          # API endpoint handlers
-    ├── calories.js                  # Calorie tracking API endpoints (GET, POST, DELETE)
-    ├── exercises.js                 # Exercise management API endpoints (CRUD operations)
-    ├── goals.js                     # Goal setting and tracking API endpoints
-    ├── profile.js                   # User profile management API endpoints, avatar upload
-    ├── users.js                     # User authentication and management API endpoints
-    └── workout.js                   # Workout session API endpoints
+## Workspace Root
+├── file_structure.txt               # This file
+└── mern-exercise-tracker/           # Project root
+    ├── package.json                 # Frontend root package
+    ├── package-lock.json
+    ├── README.md
+    ├── node_modules/
+    ├── build/                       # Production build output
+    │   ├── index.html
+    │   ├── asset-manifest.json
+    │   ├── favicon.ico
+    │   ├── logo192.png, logo512.png
+    │   ├── manifest.json
+    │   ├── robots.txt
+    │   └── static/
+    │       ├── css/
+    │       └── js/
+    ├── public/                      # Static assets
+    │   ├── index.html
+    │   ├── favicon.ico
+    │   ├── logo192.png, logo512.png
+    │   ├── manifest.json
+    │   └── robots.txt
+    ├── backend/                     # Node.js/Express API server
+    │   ├── .env
+    │   ├── server.js                # Wires routes, middleware, Mongo connection
+    │   ├── add_users.js
+    │   ├── package.json
+    │   ├── package-lock.json
+    │   ├── node_modules/
+    │   ├── config/
+    │   ├── middleware/
+    │   ├── models/
+    │   │   ├── auth.model.js
+    │   │   ├── calorie.model.js
+    │   │   ├── comment.model.js
+    │   │   ├── exercise.model.js    # Includes userEmail (user-scoped)
+    │   │   ├── forum.model.js
+    │   │   ├── goal.model.js
+    │   │   ├── order.model.js       # Orders placed from Store
+    │   │   ├── profile.model.js
+    │   │   ├── store.model.js
+    │   │   ├── user.model.js
+    │   │   ├── weight.model.js
+    │   │   └── workout.model.js     # Includes userEmail, per-user unique name
+    │   └── routes/
+    │       ├── calories.js
+    │       ├── comments.js
+    │       ├── exercises.js         # Accepts userEmail & username filters
+    │       ├── forum.js
+    │       ├── goals.js
+    │       ├── orders.js            # POST /orders/add, GET /orders
+    │       ├── profile.js
+    │       ├── store.js
+    │       ├── users.js
+    │       ├── weights.js
+    │       └── workout.js           # GET /workout?userEmail=..., DELETE /workout/:username
+    └── src/                         # React application
+        ├── App.js
+        ├── App.css
+        ├── App.test.js
+        ├── index.js
+        ├── index.css
+        ├── logo.svg
+        ├── reportWebVitals.js
+        ├── setupTests.js
+        ├── SignupForm.js
+        ├── context/
+        │   └── AuthContext.js       # Stores user (email) in localStorage
+        ├── components/
+        │   ├── Analytics.js
+        │   ├── Calories.js
+        │   ├── Forum.css
+        │   ├── Forum.js
+        │   ├── Goals.js
+        │   ├── Home.js              # Dashboard (workout details, delete workout)
+        │   ├── Profile.js
+        │   ├── Store.css
+        │   ├── Store.js             # Cart + Checkout; posts to /orders/add
+        │   ├── Trainer.js
+        │   ├── Weight.js
+        │   ├── WorkoutBuilder.js    # User-scoped workouts/exercises
+        │   ├── WorkoutsPage.js
+        │   ├── auth/
+        │   │   ├── SignIn.js
+        │   │   └── SignUp.js
+        │   ├── create-exercise.component.js
+        │   ├── create-user.component.js
+        │   ├── create-workout.component.js
+        │   ├── edit-exercise.component.js
+        │   ├── exercises-list.component.js
+        │   └── navbar.component.js
+        └── pages/
 
-## Frontend (React Application)
-src/
-├── App.js                           # Main React component - sets up routing, authentication provider
-├── App.css                          # Global application styles
-├── App.test.js                      # Unit tests for App component
-├── index.js                         # React application entry point - renders App into DOM
-├── index.css                        # Global CSS styles and Bootstrap imports
-├── logo.svg                         # React logo asset
-├── reportWebVitals.js              # Performance monitoring utility
-├── setupTests.js                   # Jest testing framework configuration
-├── SignupForm.js                   # Legacy signup form component (not currently used)
-├── components/                      # Reusable React UI components
-│   ├── Analytics.js                # Data visualization and workout analytics dashboard
-│   ├── Calories.js                 # Calorie tracking interface (add, view, delete calories)
-│   ├── create-exercise.component.js # Exercise creation form with validation
-│   ├── create-user.component.js    # User creation form (legacy component)
-│   ├── create-workout.component.js # Workout session creation interface
-│   ├── edit-exercise.component.js  # Exercise editing form with pre-populated data
-│   ├── exercises-list.component.js # Display list of exercises with edit/delete options
-│   ├── Goals.js                    # Goal setting and management interface
-│   ├── Home.js                     # Home page component (if used)
-│   ├── navbar.component.js        # Navigation bar with authentication-aware menu
-│   ├── Profile.js                  # User profile management with avatar upload
-│   ├── Store.js                    # Fitness equipment/supplements store interface
-│   ├── Trainer.js                  # Trainer discovery and rating system
-│   ├── WorkoutsPage.js             # Workout session listing and management
-│   └── auth/                       # Authentication-related components
-│       ├── SignIn.js              # User login form with validation
-│       └── SignUp.js              # User registration form with validation
-├── context/                        # React Context for state management
-│   └── AuthContext.js             # Authentication state management (login, logout, user data)
-└── pages/                          # Page-level components directory (currently empty)
-
-## Build Output (Generated)
-build/                              # Production build output (created by 'npm run build')
-├── index.html                     # Optimized HTML file
-├── asset-manifest.json           # Build asset mapping
-├── favicon.ico                   # Site icon
-├── logo192.png & logo512.png     # PWA app icons
-├── manifest.json                 # PWA manifest for mobile installation
-├── robots.txt                    # Search engine crawling instructions
-└── static/                       # Optimized static assets
-    ├── css/                      # Minified CSS files
-    └── js/                       # Minified JavaScript bundles
-
-## Public Assets (Static Files)
-public/
-├── index.html                    # HTML template with React root element
-├── favicon.ico                   # Browser tab icon
-├── logo192.png & logo512.png     # Progressive Web App icons
-├── manifest.json                 # PWA configuration for mobile app installation
-└── robots.txt                    # Search engine crawler permissions
-
-## File Type Summary:
-- **Models**: Define database schemas and data validation rules
-- **Routes**: Handle HTTP requests and business logic for API endpoints  
-- **Components**: Reusable React UI elements with specific functionality
-- **Context**: Global state management for authentication and user data
-- **Utilities**: Helper scripts and configuration files
-- **Assets**: Images, icons, and static files served to browsers
+## Notes / Key Behaviors
+- Workouts and exercises are user-scoped via `userEmail`.
+- Dashboard (`Home.js`) shows per-workout details (counts, totals, last session) and allows deleting a workout (removes its exercises).
+- Store has a cart at the top and a checkout modal (address, phone, delivery date); orders are saved in `orders` collection via `/orders/add`.

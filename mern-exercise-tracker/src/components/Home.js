@@ -182,7 +182,7 @@ export default function Home() {
                   ) : (
                     <>
                       <div className="text-muted small mb-1">
-                        Last session: {lastDate ? lastDate.toLocaleDateString() : 'N/A'}
+                        {lastDate ? lastDate.toLocaleDateString() : 'N/A'}
                       </div>
                       <ul className="list-unstyled small mb-3" style={{ maxHeight: 100, overflowY: 'auto' }}>
                         {recent.map(e => (
